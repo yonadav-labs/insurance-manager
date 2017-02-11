@@ -1,0 +1,253 @@
+{% load pages_tags mezzanine_tags i18n staticfiles %}
+<!DOCTYPE html>
+<!--[if IE 9 ]><html class="ie9"><![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="An independent analytics firm focused on delivering the best employee benefits benchmarking tools and reports on the market today.">
+        <meta name="keywords" content="Employee, Benefits, Benchmarking, Reports, Health Insurance, Benefits Benchmarking, Analytics">
+        <title>Employee Benefits Benchmarking</title>
+        <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/png">
+
+        <!-- Vendor CSS -->
+        <link href="{% static 'vendors/bower_components/animate.css/animate.min.css' %}" rel="stylesheet">
+        <link href="{% static 'vendors/bower_components/bootstrap-sweetalert/lib/sweet-alert.css' %}" rel="stylesheet">
+        <link href="{% static 'vendors/bower_components/material-design-iconic-font/dist/css/material-design-iconic-font.min.css' %}" rel="stylesheet">
+        <link href="{% static 'vendors/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css' %} rel="stylesheet">        
+            
+        <!-- CSS -->
+        <link href="{% static 'css/app.min.1.css' %}" rel="stylesheet">
+        <link href="{% static 'css/app.min.2.css' %}" rel="stylesheet">
+        <link href="{% static 'css/bnchmrk.css' %}" rel="stylesheet">
+        {% block extra_css %}
+        {% endblock %}
+
+    </head>
+    <body>
+    <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <img img src="{% static 'img/bnchmrk_logo.png' %}" alt="">
+                    </a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        {% if user.is_authenticated %}
+                        <li>
+                            <a href="/enterprise" class="enterprise-link"><span style="color:#ee7123; font-weight: bold;">ENTERPRISE</span></a> 
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a href="/blog">Insights & News</a>
+                        </li>
+                        <li>
+                            <a href="/">We're Hiring</a>
+                        </li>
+                        <li>
+                            <a href="/">Contact</a>
+                        </li>
+                        <li>
+                            {% if user.is_authenticated %}
+                            <a href="/logout">Logout</a>
+                            {% else %}
+                            <a href="/login">Login</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+        </nav>
+
+        {% block body %}
+        <!-- Full Width Image Header -->
+        <header class="header-image">
+            <div class="headline">
+                <div class="container">
+                    <h1>Employee Benefits Benchmarking</h1>
+                    <h2>Differentiating our partners from the competition</h2>
+                </div>
+            </div>
+        </header>
+
+        <hr>
+
+        <div class="container">
+            <!-- Features Title -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>A New Approach to Employee Benefits Benchmarking</h3>
+                    <p>As a leader in big data and employee benefits, our proprietary analytics platform delivers a combination of features unparalleled in the marketplace.</p>
+                </div>
+            </div>
+
+            <!-- Feature Items -->
+            <div class="row text-center">
+                <div class="col-md-3 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="{% static 'img/features/icons-target-reporting.png' %}" alt="">
+                        <div class="caption">
+                            <h3>Custom Reporting</h3>
+                            <p>Delivering unlimited reports for a one-time, annual fee</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="{% static 'img/features/icons-real-time.png' %}" alt="">
+                        <div class="caption">
+                            <h3>Real-Time Data</h3>
+                            <p>Covering active 2017 employee benefit plans, refreshed daily</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="{% static 'img/features/icons-analyze.png' %}" alt="">
+                        <div class="caption">
+                            <h3>Diversified Results</h3>
+                            <p>Analyzing multiple plans including dental, vision and ancillary</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="{% static 'img/features/icons-partner.png' %}" alt="">
+                        <div class="caption">
+                            <h3>No Conflict of Interest</h3>
+                            <p>Partnering with consultants, not competing for business</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Items -->
+            <div class="row text-center">
+                <div class="col-md-3 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="{% static 'img/features/icons-trophy.png' %}" alt="">
+                        <div class="caption">
+                            <h3>Enhanced Client Retention</h3>
+                            <p>Providing online access to interactive benchmarking software</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="{% static 'img/features/icons-light-bulb.png' %}" alt="">
+                        <div class="caption">
+                            <h3>Strategic Consulting Model</h3>
+                            <p>Reinforcing our platform with top-notch support (if you need it)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="{% static 'img/features/icons-money.png' %}" alt="">
+                        <div class="caption">
+                            <h3>Smarter Renewal Decisions</h3>
+                            <p>Operating as an extension of your consulting team</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="{% static 'img/features/icons-box.png' %}" alt="">
+                        <div class="caption">
+                            <h3>Book of Business Utilization</h3>
+                            <p>Solving HR's most important benefits issues</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fixed Height Image Aside -->
+            <aside class="image-bg-fixed-height">
+                <h1>bnchmrk is growing. Grow with us.</h1>
+                <a class="btn btn-success" href="/">We're Hiring</a>
+            </aside>
+            <hr>
+
+            <div class="jumbotron hero-spacer">
+                    <h3>The <span style="color:#33cc33">bnchmrk</span> Story</h3>
+                    <hr>
+                    <p>The bnchmrk technology platform was developed in 2015 by Andrew Kimmel. The objective was to level the information technology playing field between employee benefits and other core business functions through the creation of world-class benchmarking analytics that can be utilized by brokers, HR consultants, and investors for their clients.</p>
+                    <p>While serving as Director of Analytics for a national employee benefits brokerage firm, Andrew was responsible for advising and assisting employers in managing the costs of their health and welfare programs. Competitive market analysis was essential; however, finding actionable benchmarking reports was growing increasingly difficult. The available data was quickly outdated, limited in sample size, inherently biased, and often posed to be a conflict of interest. Many professional service industries along with the employee benefits field share these issues, but have been slow to incorporate cutting edge IT practices into their consulting models.</p>
+                    <p>A passion for big data problem solving led Andrew to pursue a career in the field of business intelligence consulting following his tenure at the national brokerage firm. Quickly recognizing the inherent value of cross applications of current sales and marketing techniques, an innovative approach to collecting, processing and storing benefits data was formulated. This breakthrough gave rise to very successful outcomes, ultimately leading to the development of the bnchmrk proprietary analytics platform.</p>
+                    <hr>
+            </div>
+        </div>
+        {% endblock %}
+        <!-- Footer -->
+        <div class="footer-bg">
+            <div class="container">
+                <div class="col-md-8">
+                    <p class="footer-links"><a href="/" class="footer-links">Home</a> / <a href="/" class="footer-links">Insights & News</a> / <a href="/" class="footer-links">We're Hiring</a> / <a href="/" class="footer-links">Contact</a>
+                    <p>Thank you for your interest in bnchmrk. Please contact us using the information to the right or by clicking on the Contact link in the menu. To get the latest updates from bnchmrk, check out our Insights & News section or connect with us on social media.</p>
+                </div>
+                <div class="col-md-4 footer-contact-section">
+                    <p><span style="color: #ffffff;">Mailing Address</span><br/>PO Box 834<br/>New Providence, NJ 07974</p>
+                    <p><span style="color: #ffffff;">Phone Contact</span><br/>Toll Free: 800-215-2616<br/>Direct: 973-867-8039</p>
+                    <p><span style="color: #ffffff;">Email Contact</span><br/><a href="mailto:sales@bnchmrk.com">Sales@bnchmrk.com</a><br/><a href="mailto:support@bnchmrk.com">Support@bnchmrk.com</a></p>
+                    <a href="https://www.linkedin.com/company/bnchmrk" target="_blank"><img img src="{% static 'img/linkedin.png' %}" alt=""></a>
+                    <a href="https://twitter.com/bnchmrk_" target="_blank"><img img src="{% static 'img/twitter.png' %}" alt=""></a>
+                </div>
+            </div>
+            <div class="container">
+                <p>Copyright &copy; 2017 bnchmrk LLC</p>
+            </div>
+        </div>
+
+        <!-- Page Loader -->
+        <div class="page-loader">
+            <div class="preloader pls-blue">
+                <svg class="pl-circular" viewBox="25 25 50 50">
+                    <circle class="plc-path" cx="50" cy="50" r="20" />
+                </svg>
+                <p>Please wait...</p>
+            </div>
+        </div>
+        
+        <!-- Javascript Libraries -->
+        <script src="{% static 'vendors/bower_components/jquery/dist/jquery.min.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+        
+        <script src="{% static 'vendors/bower_components/flot/jquery.flot.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/flot/jquery.flot.resize.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/flot.curvedlines/curvedLines.js' %}"></script>
+        <script src="{% static 'vendors/sparklines/jquery.sparkline.min.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js' %}"></script>
+        
+        <script src="{% static 'vendors/bower_components/moment/min/moment.min.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/fullcalendar/dist/fullcalendar.min.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/simpleWeather/jquery.simpleWeather.min.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/Waves/dist/waves.min.js' %}"></script>
+        <script src="{% static 'vendors/bootstrap-growl/bootstrap-growl.min.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/bootstrap-sweetalert/lib/sweet-alert.min.js' %}"></script>
+        <script src="{% static 'vendors/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+        
+        <!-- Placeholder for IE9 -->
+        <!--[if IE 9 ]>
+            <script src="vendors/bower_components/jquery-placeholder/jquery.placeholder.min.js"></script>
+        <![endif]-->
+        
+        <script src="{% static 'js/flot-charts/curved-line-chart.js' %}"></script>
+        <script src="{% static 'js/flot-charts/line-chart.js' %}"></script>
+        <script src="{% static 'js/charts.js' %}"></script>
+        <script src="{% static 'js/functions.js' %}"></script>
+        {% block extra_js %}
+        {% endblock %}
+    </body>
+  </html>

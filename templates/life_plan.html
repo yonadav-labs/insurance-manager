@@ -1,0 +1,32 @@
+<table>
+    <thead>
+        <td>Field</td>
+        <td>Median</td>
+        <td>Count</td>
+    </thead>
+    <tbody>
+        {% if medians %}
+        <tr>
+            <td>Multiple</td>
+            <td>{{ medians.0 }}</td>
+            <td>{{ counts.0 }}</td>
+        </tr>
+        <tr>
+            <td>Multiple Max</td>
+            <td>{{ medians.1 }}</td>
+            <td>{{ counts.1 }}</td>
+        </tr>
+        <tr>
+            <td>Flat Amount</td>
+            <td>{{ medians.2 }}</td>
+            <td>{{ counts.2 }}</td>
+        </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">
+                    There is no enough employers.
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
