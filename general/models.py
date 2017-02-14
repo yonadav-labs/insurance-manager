@@ -7,12 +7,12 @@ from django.db import models
 class Employer(models.Model):
     id = models.CharField(max_length=18, primary_key=True)
     name = models.CharField(max_length=100)
-    alias = models.CharField(max_length=100) 
-    broker = models.CharField(max_length=75) 
-    industry1 = models.CharField(max_length=75)
-    industry2 = models.CharField(max_length=75) 
-    industry3 = models.CharField(max_length=75) 
-    state = models.CharField(max_length=25)
+    alias = models.CharField(max_length=100, null=True, blank=True) 
+    broker = models.CharField(max_length=75, null=True, blank=True) 
+    industry1 = models.CharField(max_length=75, null=True, blank=True)
+    industry2 = models.CharField(max_length=75, null=True, blank=True) 
+    industry3 = models.CharField(max_length=75, null=True, blank=True) 
+    state = models.CharField(max_length=25, null=True, blank=True)
     size = models.IntegerField(blank=True, null=True)
     nonprofit = models.BooleanField()
     govt_contractor = models.BooleanField()
@@ -24,12 +24,12 @@ class Employer(models.Model):
     west_central = models.BooleanField()
     mountain = models.BooleanField()
     pacific = models.BooleanField()
-    med_count = models.IntegerField() 
-    den_count = models.IntegerField() 
-    vis_count = models.IntegerField() 
-    life_count = models.IntegerField() 
-    std_count = models.IntegerField() 
-    ltd_count = models.IntegerField() 
+    med_count = models.IntegerField(default=0) 
+    den_count = models.IntegerField(default=0) 
+    vis_count = models.IntegerField(default=0) 
+    life_count = models.IntegerField(default=0) 
+    std_count = models.IntegerField(default=0) 
+    ltd_count = models.IntegerField(default=0) 
 
     def __unicode__(self):
         return self.name
@@ -42,7 +42,7 @@ class Life(models.Model):
     multiple_max = models.IntegerField(blank=True, null=True)
     flat_amount = models.IntegerField(blank=True, null=True)
     add = models.BooleanField()
-    cost_share = models.CharField(max_length=19)
+    cost_share = models.CharField(max_length=19, null=True, blank=True)
 
     def __unicode__(self):
         return self.employer.name
@@ -59,12 +59,11 @@ class STD(models.Model):
     duration_weeks = models.IntegerField(blank=True, null=True)
     percentage = models.IntegerField(blank=True, null=True)
     weekly_max = models.IntegerField(blank=True, null=True)
-    cost_share = models.CharField(max_length=19)
+    cost_share = models.CharField(max_length=19, null=True, blank=True)
 
     def __unicode__(self):
         return self.employer.name
         
     class Meta:
         verbose_name_plural = 'STD Plans'
-    
     

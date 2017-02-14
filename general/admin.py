@@ -5,3 +5,4 @@ from .models import *
 
 admin.site.register(Employer)
 admin.site.register(Life)
+admin.site.register(STD)
