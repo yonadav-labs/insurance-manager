@@ -1,3 +1,6 @@
+{% load humanize %}
+
+{% if num_employers %}
 <table>
     <thead>
         <td>Field</td>
@@ -5,28 +8,99 @@
         <td>Count</td>
     </thead>
     <tbody>
-        {% if medians %}
         <tr>
             <td>Multiple</td>
-            <td>{{ medians.0 }}</td>
-            <td>{{ counts.0 }}</td>
+            <td>{{ mdn_multiple }}</td>
+            <td>{{ cnt_multiple }}</td>
         </tr>
         <tr>
             <td>Multiple Max</td>
-            <td>{{ medians.1 }}</td>
-            <td>{{ counts.1 }}</td>
+            <td>${{ mdn_multiple_max|intcomma }}</td>
+            <td>{{ cnt_multiple_max }}</td>
         </tr>
         <tr>
             <td>Flat Amount</td>
-            <td>{{ medians.2 }}</td>
-            <td>{{ counts.2 }}</td>
+            <td>${{ mdn_flat_amount|intcomma }}</td>
+            <td>{{ cnt_flat_amount }}</td>
         </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">
-                    There is no enough employers.
-                </td>
-            </tr>
-        {% endif %}
     </tbody>
 </table>
+
+<table>
+    <thead>
+        <td>Field</td>
+        <td>% of Life Plans</td>
+        <td>Count</td>
+    </thead>
+    <tbody>
+        <tr>
+            <td>With ADD</td>
+            <td>{{ prcnt_add }}</td>
+            <td>{{ cnt_add }}</td>
+        </tr>
+        <tr>
+            <td>Without ADD</td>
+            <td>{{ prcnt_add_ }}</td>
+            <td>{{ cnt_add_ }}</td>
+        </tr>
+        <tr>
+            <td>Multiple of Salary Plans</td>
+            <td>{{ prcnt_type }}</td>
+            <td>{{ cnt_type }}</td>
+        </tr>
+        <tr>
+            <td>Flat Amount Plans</td>
+            <td>{{ prcnt_type_ }}</td>
+            <td>{{ cnt_type_ }}</td>
+        </tr>
+        <tr>
+            <td>100% Employer Paid</td>
+            <td>{{ prcnt_cost_share }}</td>
+            <td>{{ cnt_cost_share }}</td>
+        </tr>
+        <tr>
+            <td>Employee Cost Share</td>
+            <td>{{ prcnt_cost_share_ }}</td>
+            <td>{{ cnt_cost_share_ }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <td>Number of Life Plans Offered</td>
+        <td>% of Employers</td>
+        <td>Count</td>
+    </thead>
+    <tbody>
+        <tr>
+            <td>None</td>
+            <td>{{ prcnt_plan0 }}</td>
+            <td>{{ num_plan0 }}</td>
+        </tr>
+        <tr>
+            <td>1 Plan</td>
+            <td>{{ prcnt_plan1 }}</td>
+            <td>{{ num_plan1 }}</td>
+        </tr>
+        <tr>
+            <td>2 Plans</td>
+            <td>{{ prcnt_plan2 }}</td>
+            <td>{{ num_plan2 }}</td>
+        </tr>
+        <tr>
+            <td>3 or More Plans</td>
+            <td>{{ prcnt_plan3_or_more }}</td>
+            <td>{{ num_plan3_or_more }}</td>
+        </tr>
+        <tr>
+            <td>Total</td>
+            <td>100%</td>
+            <td>{{ num_employers }}</td>
+        </tr>
+
+    </tbody>
+</table>
+{% else %}
+    <p class="threshold-error">{{ EMPLOYER_THRESHOLD_MESSAGE }}</p>
+{% endif %}

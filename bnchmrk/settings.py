@@ -240,6 +240,7 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
     "mezzanine.boot",
     "mezzanine.conf",
     "mezzanine.core",
@@ -337,3 +338,6 @@ except ImportError:
     pass
 else:
     set_dynamic_settings(globals())
+
+EMPLOYER_THRESHOLD = 25
+EMPLOYER_THRESHOLD_MESSAGE = 'Current search criteria resulted in less 25 employers. Please expand it by selecting additional filters before refreshing.'

@@ -11,7 +11,6 @@
         <nav class="enterprise-navbar">
             <ul class="nav nav-tabs nav-justified">
                 <li class="active"><a href="javascript:void(0);">EMPLOYERS</a></li>
-                <li><a href="javascript:void(0);">PREVALENCE</a></li>
                 <li><a href="javascript:void(0);">PPO</a></li>
                 <li><a href="javascript:void(0);">HMO</a></li>
                 <li><a href="javascript:void(0);">HSA</a></li>
@@ -24,14 +23,13 @@
                 <li><a href="javascript:void(0);">STD</a></li>
                 <li><a href="javascript:void(0);">LTD</a></li>
                 <li><a href="javascript:void(0);">STRATEGY</a></li>
-                <li><a href="javascript:void(0);">NOTES</a></li>
             </ul>
         </nav>
     </div>
     <div class="enterprise-control-wrapper">
         
         <div class="industry-filter">
-            <label class="filter-header">Select Industry:</label>
+            <label class="filter-header">Industries:</label>
             <select name="industry" multiple="" id="industries" class="filter-control" size="10">
                 <option value="*">All</option>
                 {% for item in industries %}
@@ -40,7 +38,7 @@
             </select>
         </div>
         <div class="headcount-filter">
-            <label class="filter-header">Select Headcount:</label>
+            <label class="filter-header">Headcounts:</label>
             <select name="head-count" multiple="" id="head-counts" class="filter-control" size="10">
                 <option value="0-2000000">All</option>
                 <option value="0-249">Up to 250</option>
@@ -51,20 +49,24 @@
             </select>
         </div>
         <div class="region-filter">
-            <label class="filter-header">Select Region:</label>
-                <select name="" multiple="" id="" class="filter-control" size="10">
-                <option>All</option>
-                <option>Northeast</option>
-                <option>Mid-Atlantic</option>
-                <option>Southeast</option>
-                <option>South Central</option>
-                <option>Midwest</option>
-                <option>West</option>
+            <label class="filter-header">Regions:</label>
+            <select name="" multiple="" id="regions" class="filter-control" size="10">
+                <option value="*">All</option>
+                <option value="new_england">New England</option>
+                <option value="mid_atlantic">Tri-State Area</option>
+                <option value="south_atlantic">South Atlantic</option>
+                <option value="south_cental">South Central</option>
+                <option value="east_central">East North Central</option>
+                <option value="west_central">West North Central</option>
+                <option value="mountain">Mountain</option>
+                <option value="pacific">Pacific</option>
             </select>
         </div>
         <div class="other-filter">
             <label class="filter-header">Other:</label>
             <div class="refresh_button pull-right">
+                <input type="checkbox" class="other_filter" value="nonprofit"> <label>Non-Profit</label><br>
+                <input type="checkbox" class="other_filter" value="govt_contractor"> <label>Government Contractor</label>
                 <a class="btn btn-primary" href="javascript:void(0);" onclick="refresh_body();">Refresh</a>
             </div>
         </div>
@@ -78,6 +80,9 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script type="text/javascript">
+        var EMPLOYER_THRESHOLD_MESSAGE = "{{ EMPLOYER_THRESHOLD_MESSAGE }}";
+    </script>
     <script src="{% static 'js/enterprise.js' %}"></script>
     <script src="{% static 'vendors/bootgrid/jquery.bootgrid.updated.min.js' %}"></script>    
 {% endblock %}
