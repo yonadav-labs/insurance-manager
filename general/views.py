@@ -11,6 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from django.db.models import Q
 from django.conf import settings
+from django.utils.safestring import mark_safe
+
 from .models import *
 
 
@@ -34,7 +36,7 @@ def user_login(request):
             login(request, user)
             return HttpResponseRedirect(reverse('enterprise'))
         else:
-            message = 'Your login credential is not correct! Please try again.'
+            message = 'Your login credential is incorrect! Please try again.'
             return render(request, 'login.html', {
                 'message': message,
             })
@@ -117,7 +119,7 @@ def import_data(request):
     return HttpResponse('Successfully imported!')
 
 
-def get_filtered_employers(ft_industries, ft_head_counts, ft_other, ft_regions, lstart=0, lend=0):
+def get_filtered_employers(ft_industries, ft_head_counts, ft_other, ft_regions, lstart=0, lend=0, order_by='name'):
     # filter with factors from UI (industry, head-count, other)
     q = Q()
     if not '*' in ft_industries:
@@ -138,9 +140,9 @@ def get_filtered_employers(ft_industries, ft_head_counts, ft_other, ft_regions, 
         q_ |= Q(size__gte=int(ft_vals[0])) & Q(size__lte=int(ft_vals[1]))
 
     if lend:
-        employers = Employer.objects.filter(q & q_).order_by('name')[lstart:lend]
+        employers = Employer.objects.filter(q & q_).order_by(order_by)[lstart:lend]
     else:
-        employers = Employer.objects.filter(q & q_).order_by('name')
+        employers = Employer.objects.filter(q & q_).order_by(order_by)
 
     num_companies = Employer.objects.filter(q & q_).count()    
     # filter with number of companies
@@ -166,17 +168,24 @@ def enterprise(request):
         lstart = (page - 1) * limit
         lend = lstart + limit
 
+        is_core_user = request.user.groups.filter(name='Core').exists()
+        order_by = 'alias' if is_core_user else 'name'
+
         employers, num_companies = get_filtered_employers(ft_industries, 
                                                           ft_head_counts, 
                                                           ft_other, 
                                                           ft_regions, 
                                                           lstart, 
-                                                          lend)
+                                                          lend,
+                                                          order_by)
 
         # convert head-count into groups
         employers_ = []
         for item in employers:
             item_ = model_to_dict(item)
+
+            if is_core_user:
+                item_['name'] = item.alias
 
             item__ = []
             if item.nonprofit:
@@ -271,12 +280,15 @@ def get_life_plan(employers, num_companies):
     lifes = Life.objects.filter(employer__in=employers)
     num_lifes = lifes.count()
 
+
     qs_multiple = lifes.exclude(multiple__isnull=True)
     mdn_multiple, cnt_multiple = get_median_count(qs_multiple, 'multiple')
     qs_multiple_max = lifes.exclude(multiple_max__isnull=True)
     mdn_multiple_max, cnt_multiple_max = get_median_count(qs_multiple_max, 'multiple_max')
     qs_flat_amount = lifes.exclude(flat_amount__isnull=True)
     mdn_flat_amount, cnt_flat_amount = get_median_count(qs_flat_amount, 'flat_amount')    
+    # flat_array = get_flat_array(qs_flat_amount) 
+    flat_array = []
 
     cnt_add = lifes.filter(add=True).count()
     cnt_type = lifes.filter(type='Multiple of Salary').count()
@@ -286,8 +298,8 @@ def get_life_plan(employers, num_companies):
     cnt_cost_share_ = num_lifes - cnt_cost_share
 
     prcnt_add = '{0:0.1f}%'.format(cnt_add * 100.0 / num_lifes)
-    prcnt_type = '{0:0.1f}%'.format(cnt_type * 100.0 / num_lifes)
-    prcnt_cost_share = '{0:0.1f}%'.format(cnt_cost_share * 100.0 / num_lifes)
+    prcnt_type = '{0:0.1f}'.format(cnt_type * 100.0 / num_lifes)
+    prcnt_cost_share = '{0:0.1f}'.format(cnt_cost_share * 100.0 / num_lifes)
     prcnt_add_ = '{0:0.1f}%'.format(cnt_add_ * 100.0 / num_lifes)
     prcnt_type_ = '{0:0.1f}%'.format(cnt_type_ * 100.0 / num_lifes)
     prcnt_cost_share_ = '{0:0.1f}%'.format(cnt_cost_share_ * 100.0 / num_lifes)
@@ -297,10 +309,10 @@ def get_life_plan(employers, num_companies):
     num_plan2 = employers.filter(life_count=2).count()
     num_plan3_or_more = num_companies - num_plan0 - num_plan1 - num_plan2
 
-    prcnt_plan0 = '{0:0.1f}%'.format(num_plan0 * 100.0 / num_companies)
-    prcnt_plan1 = '{0:0.1f}%'.format(num_plan1 * 100.0 / num_companies)
-    prcnt_plan2 = '{0:0.1f}%'.format(num_plan2 * 100.0 / num_companies)
-    prcnt_plan3_or_more = '{0:0.1f}%'.format(num_plan3_or_more * 100.0 / num_companies)
+    prcnt_plan0 = '{0:0.1f}'.format(num_plan0 * 100.0 / num_companies)
+    prcnt_plan1 = '{0:0.1f}'.format(num_plan1 * 100.0 / num_companies)
+    prcnt_plan2 = '{0:0.1f}'.format(num_plan2 * 100.0 / num_companies)
+    prcnt_plan3_or_more = '{0:0.1f}'.format(num_plan3_or_more * 100.0 / num_companies)
 
     return {
         'EMPLOYER_THRESHOLD_MESSAGE': settings.EMPLOYER_THRESHOLD_MESSAGE,
@@ -312,6 +324,7 @@ def get_life_plan(employers, num_companies):
         'cnt_multiple_max': cnt_multiple_max,
         'mdn_flat_amount': mdn_flat_amount, 
         'cnt_flat_amount': cnt_flat_amount,
+        'flat_array': mark_safe(flat_array),
         
         'cnt_add': cnt_add,
         'cnt_type': cnt_type,
@@ -341,6 +354,22 @@ def get_life_plan(employers, num_companies):
     }
 
 
+@csrf_exempt
+def get_num_employers(request):
+    form_param = request.POST
+    ft_industries = form_param.getlist('industry[]', ['*'])
+    ft_head_counts = form_param.getlist('head_counts[]') or ['0-2000000']
+    ft_other = form_param.getlist('others[]')
+    ft_regions = form_param.getlist('regions[]')
+    benefit = form_param.get('benefit')
+
+    employers, num_companies = get_filtered_employers(ft_industries, 
+                                                      ft_head_counts, 
+                                                      ft_other,
+                                                      ft_regions)
+    return HttpResponse(num_companies or "<25")
+
+
 def get_median_count(queryset, term):
     count = queryset.count()
     values = queryset.values_list(term, flat=True).order_by(term)
@@ -348,3 +377,18 @@ def get_median_count(queryset, term):
         return values[int(round(count/2))], count
     else:
         return sum(values[count/2-1:count/2+1])/2.0, count
+
+
+def get_flat_array(lifes):
+    min_ = lifes.order_by('flat_amount').first().flat_amount
+    max_ = lifes.order_by('-flat_amount').first().flat_amount
+    min_ = min_ / settings.FLAT_BUCKET_SIZE * settings.FLAT_BUCKET_SIZE 
+    max_ = (max_ / settings.FLAT_BUCKET_SIZE + 1) * settings.FLAT_BUCKET_SIZE 
+
+    buckets = [[item, item+settings.FLAT_BUCKET_SIZE-1] for item in range(min_, max_-1, settings.FLAT_BUCKET_SIZE)]
+    f_array = []
+    for bucket in buckets:
+        cnt = lifes.filter(flat_amount__gte=bucket[0], flat_amount__lte=bucket[1]).count()
+        f_array.append(["{}-{}".format(bucket[0], bucket[1]), cnt])
+
+    return json.dumps(f_array)
