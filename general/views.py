@@ -244,6 +244,8 @@ def enterprise(request):
         industries3 = [item[0] for item in industries3 if item[0]]
         industries = set(industries1 + industries2 + industries3)
 
+        request.session['benefit'] = request.session.get('benefit', 'EMPLOYERS')
+
         return render(request, 'enterprise.html', {
                 'industries': sorted(industries),
                 'EMPLOYER_THRESHOLD_MESSAGE': settings.EMPLOYER_THRESHOLD_MESSAGE
@@ -258,6 +260,7 @@ def ajax_enterprise(request):
     ft_other = form_param.getlist('others[]')
     ft_regions = form_param.getlist('regions[]')
     benefit = form_param.get('benefit')
+    request.session['benefit'] = benefit
 
     if benefit == 'LIFE':
         employers, num_companies = get_filtered_employers(ft_industries, 
@@ -287,23 +290,8 @@ def get_life_plan(employers, num_companies):
     mdn_multiple_max, cnt_multiple_max = get_median_count(qs_multiple_max, 'multiple_max')
     qs_flat_amount = lifes.exclude(flat_amount__isnull=True)
     mdn_flat_amount, cnt_flat_amount = get_median_count(qs_flat_amount, 'flat_amount')    
-    # flat_array = get_flat_array(qs_flat_amount) 
-    flat_array = []
 
-    cnt_add = lifes.filter(add=True).count()
-    cnt_type = lifes.filter(type='Multiple of Salary').count()
-    cnt_cost_share = lifes.filter(cost_share='100% Employer Paid').count()
-    cnt_add_ = num_lifes - cnt_add
-    cnt_type_ = num_lifes - cnt_type
-    cnt_cost_share_ = num_lifes - cnt_cost_share
-
-    prcnt_add = '{0:0.1f}%'.format(cnt_add * 100.0 / num_lifes)
-    prcnt_type = '{0:0.1f}'.format(cnt_type * 100.0 / num_lifes)
-    prcnt_cost_share = '{0:0.1f}'.format(cnt_cost_share * 100.0 / num_lifes)
-    prcnt_add_ = '{0:0.1f}%'.format(cnt_add_ * 100.0 / num_lifes)
-    prcnt_type_ = '{0:0.1f}%'.format(cnt_type_ * 100.0 / num_lifes)
-    prcnt_cost_share_ = '{0:0.1f}%'.format(cnt_cost_share_ * 100.0 / num_lifes)
-
+    # for counting # of plans
     num_plan0 = employers.filter(life_count=0).count()
     num_plan1 = employers.filter(life_count=1).count()
     num_plan2 = employers.filter(life_count=2).count()
@@ -313,6 +301,36 @@ def get_life_plan(employers, num_companies):
     prcnt_plan1 = '{0:0.1f}'.format(num_plan1 * 100.0 / num_companies)
     prcnt_plan2 = '{0:0.1f}'.format(num_plan2 * 100.0 / num_companies)
     prcnt_plan3_or_more = '{0:0.1f}'.format(num_plan3_or_more * 100.0 / num_companies)
+
+    flat_array = get_flat_array(qs_flat_amount) 
+    flat_array_ = [['{0:0.1f}%'.format(item[1] * 100.0 / cnt_flat_amount), item[1]] for item in flat_array]
+    flat_array = [[item[0], '{0:0.1f}'.format(item[1] * 100.0 / cnt_flat_amount)] for item in flat_array]
+
+    cnt_add = lifes.filter(add=True).count()
+
+    companies_with_mul_plan = set([item.employer_id for item in lifes.filter(type='Multiple of Salary')])
+    companies_with_flat_plan = set([item.employer_id for item in lifes.filter(type='Flat Amount')])
+
+    cnt_type_plan_none = num_plan0
+    cnt_type_plan_mul = len(companies_with_mul_plan - companies_with_flat_plan)
+    cnt_type_plan_flat = len(companies_with_flat_plan - companies_with_mul_plan)
+    cnt_type_plan_mul_flat = num_companies - cnt_type_plan_none - cnt_type_plan_mul - cnt_type_plan_flat
+
+    companies_with_paid = set([item.employer_id for item in lifes.filter(cost_share='100% Employer Paid')])
+    companies_with_share = set([item.employer_id for item in lifes.filter(cost_share='Employee Cost Share')])
+    cnt_paid = len(companies_with_paid - companies_with_share)
+    cnt_share = len(companies_with_share - companies_with_paid)
+    cnt_paid_share = num_companies - num_plan0 - cnt_paid - cnt_share
+
+    prcnt_add = '{0:0.1f}%'.format(cnt_add * 100.0 / num_lifes)
+    prcnt_type_plan_none = '{0:0.1f}'.format(cnt_type_plan_none * 100.0 / num_companies)
+    prcnt_type_plan_mul = '{0:0.1f}'.format(cnt_type_plan_mul * 100.0 / num_companies)
+    prcnt_type_plan_flat = '{0:0.1f}'.format(cnt_type_plan_flat * 100.0 / num_companies)
+    prcnt_type_plan_mul_flat = '{0:0.1f}'.format(cnt_type_plan_mul_flat * 100.0 / num_companies)
+    
+    prcnt_paid = '{0:0.1f}'.format(cnt_paid * 100.0 / num_companies)
+    prcnt_share = '{0:0.1f}'.format(cnt_share * 100.0 / num_companies)
+    prcnt_paid_share = '{0:0.1f}'.format(cnt_paid_share * 100.0 / num_companies)    
 
     return {
         'EMPLOYER_THRESHOLD_MESSAGE': settings.EMPLOYER_THRESHOLD_MESSAGE,
@@ -324,23 +342,26 @@ def get_life_plan(employers, num_companies):
         'cnt_multiple_max': cnt_multiple_max,
         'mdn_flat_amount': mdn_flat_amount, 
         'cnt_flat_amount': cnt_flat_amount,
-        'flat_array': mark_safe(flat_array),
+        'flat_array': mark_safe(json.dumps(flat_array)),
+        'flat_array_': flat_array_,
         
         'cnt_add': cnt_add,
-        'cnt_type': cnt_type,
-        'cnt_cost_share': cnt_cost_share,
-        
-        'cnt_add_': cnt_add_,
-        'cnt_type_': cnt_type_,
-        'cnt_cost_share_': cnt_cost_share_,
+        'cnt_type_plan_none': cnt_type_plan_none,
+        'cnt_type_plan_mul': cnt_type_plan_mul,
+        'cnt_type_plan_flat': cnt_type_plan_flat,
+        'cnt_type_plan_mul_flat': cnt_type_plan_mul_flat,
+        'cnt_paid': cnt_paid,
+        'cnt_share': cnt_share,
+        'cnt_paid_share': cnt_paid_share,
         
         'prcnt_add': prcnt_add,
-        'prcnt_type': prcnt_type,
-        'prcnt_cost_share': prcnt_cost_share,
-        
-        'prcnt_add_': prcnt_add_,
-        'prcnt_type_': prcnt_type_,
-        'prcnt_cost_share_': prcnt_cost_share_,
+        'prcnt_type_plan_none': prcnt_type_plan_none,
+        'prcnt_type_plan_mul': prcnt_type_plan_mul,
+        'prcnt_type_plan_flat': prcnt_type_plan_flat,
+        'prcnt_type_plan_mul_flat': prcnt_type_plan_mul_flat,
+        'prcnt_paid': prcnt_paid,
+        'prcnt_share': prcnt_share,
+        'prcnt_paid_share': prcnt_paid_share,
         
         'num_plan0': num_plan0,
         'num_plan1': num_plan1,
@@ -376,19 +397,23 @@ def get_median_count(queryset, term):
     if count % 2 == 1:
         return values[int(round(count/2))], count
     else:
-        return sum(values[count/2-1:count/2+1])/2.0, count
+        return sum(values[count/2-1:count/2+1])/2, count
 
 
 def get_flat_array(lifes):
-    min_ = lifes.order_by('flat_amount').first().flat_amount
-    max_ = lifes.order_by('-flat_amount').first().flat_amount
-    min_ = min_ / settings.FLAT_BUCKET_SIZE * settings.FLAT_BUCKET_SIZE 
-    max_ = (max_ / settings.FLAT_BUCKET_SIZE + 1) * settings.FLAT_BUCKET_SIZE 
+    min_ = settings.FLAT_BUCKET_SIZE
+    max_ = 100000
 
+    bucket_title = ['<$10k', '$20k', '$30k', '$40k', '$50k', '$60k', '$70k', '$80k', '$90k', '$100k', '$100k+']
     buckets = [[item, item+settings.FLAT_BUCKET_SIZE-1] for item in range(min_, max_-1, settings.FLAT_BUCKET_SIZE)]
+    buckets.append([max_, 10000000])
+    buckets.insert(0, [0, min_-1])
+
     f_array = []
+    idx = 0
     for bucket in buckets:
         cnt = lifes.filter(flat_amount__gte=bucket[0], flat_amount__lte=bucket[1]).count()
-        f_array.append(["{}-{}".format(bucket[0], bucket[1]), cnt])
+        f_array.append([bucket_title[idx], cnt])
+        idx += 1
 
-    return json.dumps(f_array)
+    return f_array

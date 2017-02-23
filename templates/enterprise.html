@@ -13,7 +13,7 @@
     <div class="container">       
         <nav class="enterprise-navbar">
             <ul class="nav nav-tabs nav-justified enterprise-nav">
-                <li class="active"><a href="javascript:void(0);">EMPLOYERS</a></li>
+                <li><a href="javascript:void(0);">EMPLOYERS</a></li>
                 <li><a href="javascript:void(0);">PPO</a></li>
                 <li><a href="javascript:void(0);">HMO</a></li>
                 <li><a href="javascript:void(0);">HSA</a></li>
@@ -70,7 +70,7 @@
                     <input type="checkbox" class="other_filter" value="nonprofit"> <label>Non-Profit</label><br>
                     <input type="checkbox" class="other_filter" value="govt_contractor"> <label>Government Contractor</label>
                     <label>Employers: <span id="num_employers"></span></label><br>
-                    <a class="btn btn-primary" href="javascript:void(0);" onclick="refresh_body();">Refresh</a>
+                    <a class="btn btn-primary" href="javascript:void(0);" onclick="get_body();">Refresh</a>
                 </div>
             </div>
         </div>
@@ -87,6 +87,7 @@
 {% block extra_js %}
     <script type="text/javascript">
         var EMPLOYER_THRESHOLD_MESSAGE = "{{ EMPLOYER_THRESHOLD_MESSAGE }}";
+        var benefit = '{{ request.session.benefit }}';
     </script>
     <script src="{% static 'vendors/bower_components/flot/jquery.flot.categories.js' %}"></script>
     <script src="{% static 'vendors/bower_components/flot/jquery.flot.pie.js' %}"></script>
