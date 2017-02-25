@@ -1,8 +1,18 @@
 from django.contrib import admin
 from .models import *
 
-# Register your models here.
 
-admin.site.register(Employer)
-admin.site.register(Life)
-admin.site.register(STD)
+class EmployerAdmin(admin.ModelAdmin):
+    list_display = [item.name for item in Employer._meta.fields if item.name != 'id']
+
+
+class LifeAdmin(admin.ModelAdmin):
+    list_display = [item.name for item in Life._meta.fields if item.name != 'id']
+
+
+class STDAdmin(admin.ModelAdmin):
+    list_display = [item.name for item in STD._meta.fields if item.name != 'id']
+
+admin.site.register(Employer, EmployerAdmin)
+admin.site.register(Life, LifeAdmin)
+admin.site.register(STD, STDAdmin)

@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
@@ -47,58 +47,65 @@ def user_logout(request):
     return HttpResponseRedirect(reverse('login')) 
 
 
-def import_data(request):
-    # with open('/home/akimmel/work/table extracts/employers.csv') as csvfile:
-    #     reader = csv.DictReader(csvfile)
-    #     for row in reader:
-    #         try:
-    #             employer = Employer.objects.create(
-    #                 id=row['ID'],
-    #                 name=row['NAME'].decode('utf8'),
-    #                 alias=row['EMPLOYER_ALIAS__C'].decode('utf8'),
-    #                 broker=row['BROKER__C'],
-    #                 industry1=row['INDUSTRY_1__C'],
-    #                 industry2=row['INDUSTRY_2__C'],
-    #                 industry3=row['INDUSTRY_3__C'],
-    #                 state=row['EMPLOYERSTATE__C'],
-    #                 size=row['EMPLOYERHEADCOUNT__C'],
-    #                 nonprofit=row['NON_PROFIT__C']=='TRUE',
-    #                 govt_contractor=row['GOVT_CONTRACTOR__C']=='TRUE',
-    #                 med_count=row['MEDICAL_PLANS__C'],
-    #                 den_count=row['DENTAL_PLANS__C'],
-    #                 vis_count=row['VISION_PLANS__C'],
-    #                 life_count=row['LIFE_PLANS__C'],
-    #                 std_count=row['STD_PLANS__C'],
-    #                 ltd_count=row['LTD_PLANS__C'],
-    #                 new_england=row['DISTRICT_NEW_ENGLAND__C']=='TRUE',
-    #                 mid_atlantic=row['DISTRICT_MID_ATLANTIC__C']=='TRUE',
-    #                 south_atlantic=row['DISTRICT_SOUTH_ATLANTIC__C']=='TRUE',
-    #                 south_cental=row['DISTRICT_SOUTH_CENTRAL__C']=='TRUE',
-    #                 east_central=row['DISTRICT_EAST_NORTH_CENTRAL__C']=='TRUE',
-    #                 west_central=row['DISTRICT_WEST_NORTH_CENTRAL__C']=='TRUE',
-    #                 mountain=row['DISTRICT_MOUNTAIN__C']=='TRUE',
-    #                 pacific=row['DISTRICT_PACIFIC__C']=='TRUE')
-    #         except Exception as e:
-    #             print str(e)
-    #             print row['ID'], '#{}#'.format(row['EMPLOYERHEADCOUNT__C'])
+def import_employer(request):
+    with open('/home/akimmel/work/table extracts/employers.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            try:
+                employer = Employer.objects.create(
+                    id=row['ID'],
+                    name=row['NAME'].decode('utf8'),
+                    alias=row['EMPLOYER_ALIAS__C'].decode('utf8'),
+                    broker=row['BROKER__C'],
+                    industry1=row['INDUSTRY_1__C'],
+                    industry2=row['INDUSTRY_2__C'],
+                    industry3=row['INDUSTRY_3__C'],
+                    state=row['EMPLOYERSTATE__C'],
+                    size=row['EMPLOYERHEADCOUNT__C'],
+                    nonprofit=row['NON_PROFIT__C']=='TRUE',
+                    govt_contractor=row['GOVT_CONTRACTOR__C']=='TRUE',
+                    med_count=row['MEDICAL_PLANS__C'],
+                    den_count=row['DENTAL_PLANS__C'],
+                    vis_count=row['VISION_PLANS__C'],
+                    life_count=row['LIFE_PLANS__C'],
+                    std_count=row['STD_PLANS__C'],
+                    ltd_count=row['LTD_PLANS__C'],
+                    new_england=row['DISTRICT_NEW_ENGLAND__C']=='TRUE',
+                    mid_atlantic=row['DISTRICT_MID_ATLANTIC__C']=='TRUE',
+                    south_atlantic=row['DISTRICT_SOUTH_ATLANTIC__C']=='TRUE',
+                    south_cental=row['DISTRICT_SOUTH_CENTRAL__C']=='TRUE',
+                    east_central=row['DISTRICT_EAST_NORTH_CENTRAL__C']=='TRUE',
+                    west_central=row['DISTRICT_WEST_NORTH_CENTRAL__C']=='TRUE',
+                    mountain=row['DISTRICT_MOUNTAIN__C']=='TRUE',
+                    pacific=row['DISTRICT_PACIFIC__C']=='TRUE')
+            except Exception as e:
+                print str(e)
+                print row['ID'], '#{}#'.format(row['EMPLOYERHEADCOUNT__C'])
 
-    # with open('/home/akimmel/work/table extracts/life.csv') as csvfile:
-    #     reader = csv.DictReader(csvfile)
-    #     for row in reader:
-    #         try:
-    #             life = Life.objects.create(                                                 
-    #                 employer_id=row['EMPLOYERNAME__C'],
-    #                 type=row['LP_TYPE__C'],
-    #                 multiple=row['LP_MULTIPLE__C'] or None,
-    #                 multiple_max=row['LP_MULTIPLE_MAX__C'] or None,
-    #                 flat_amount=row['LP_FLAT_AMOUNT__C'] or None,
-    #                 add=row['LP_ADD__C']=='TRUE',
-    #                 cost_share=row['LP_COST_SHARE__C'])
-    #         except Exception as e:
-    #             print str(e)
-    #             print '#{}#'.format(row['LP_MULTIPLE__C']), row['EMPLOYERNAME__C'], row['LP_TYPE__C']
-    #             # break
+    return HttpResponse('Successfully imported!')
 
+
+def import_life(request):
+    with open('/home/akimmel/work/table extracts/life.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            try:
+                life = Life.objects.create(                                                 
+                    employer_id=row['EMPLOYERNAME__C'],
+                    type=row['LP_TYPE__C'],
+                    multiple=row['LP_MULTIPLE__C'] or None,
+                    multiple_max=row['LP_MULTIPLE_MAX__C'] or None,
+                    flat_amount=row['LP_FLAT_AMOUNT__C'] or None,
+                    add=row['LP_ADD__C']=='TRUE',
+                    cost_share=row['LP_COST_SHARE__C'])
+            except Exception as e:
+                print str(e)
+                print '#{}#'.format(row['LP_MULTIPLE__C']), row['EMPLOYERNAME__C'], row['LP_TYPE__C']
+                # break
+    return HttpResponse('Successfully imported!')
+
+
+def import_std(request):
     with open('/home/akimmel/work/table extracts/STD.csv') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -290,7 +297,7 @@ def get_life_plan(employers, num_companies):
     mdn_multiple_max, cnt_multiple_max = get_median_count(qs_multiple_max, 'multiple_max')
     qs_flat_amount = lifes.exclude(flat_amount__isnull=True)
     mdn_flat_amount, cnt_flat_amount = get_median_count(qs_flat_amount, 'flat_amount')    
-
+    mn_flat_amount = get_mean(qs_flat_amount, 'flat_amount')
     # for counting # of plans
     num_plan0 = employers.filter(life_count=0).count()
     num_plan1 = employers.filter(life_count=1).count()
@@ -314,23 +321,27 @@ def get_life_plan(employers, num_companies):
     cnt_type_plan_none = num_plan0
     cnt_type_plan_mul = len(companies_with_mul_plan - companies_with_flat_plan)
     cnt_type_plan_flat = len(companies_with_flat_plan - companies_with_mul_plan)
-    cnt_type_plan_mul_flat = num_companies - cnt_type_plan_none - cnt_type_plan_mul - cnt_type_plan_flat
+    cnt_type_plan_mul_flat = len(companies_with_flat_plan.intersection(companies_with_mul_plan))
+    cnt_type_non_reported = -(cnt_type_plan_mul_flat + cnt_type_plan_none + cnt_type_plan_mul + cnt_type_plan_flat - num_companies)
 
     companies_with_paid = set([item.employer_id for item in lifes.filter(cost_share='100% Employer Paid')])
     companies_with_share = set([item.employer_id for item in lifes.filter(cost_share='Employee Cost Share')])
     cnt_paid = len(companies_with_paid - companies_with_share)
     cnt_share = len(companies_with_share - companies_with_paid)
-    cnt_paid_share = num_companies - num_plan0 - cnt_paid - cnt_share
+    cnt_paid_share = len(companies_with_share.intersection(companies_with_paid))
+    cnt_non_reported = num_companies - num_plan0 - cnt_paid - cnt_share - cnt_paid_share
 
     prcnt_add = '{0:0.1f}%'.format(cnt_add * 100.0 / num_lifes)
     prcnt_type_plan_none = '{0:0.1f}'.format(cnt_type_plan_none * 100.0 / num_companies)
     prcnt_type_plan_mul = '{0:0.1f}'.format(cnt_type_plan_mul * 100.0 / num_companies)
     prcnt_type_plan_flat = '{0:0.1f}'.format(cnt_type_plan_flat * 100.0 / num_companies)
     prcnt_type_plan_mul_flat = '{0:0.1f}'.format(cnt_type_plan_mul_flat * 100.0 / num_companies)
-    
+    prcnt_type_non_reported = '{0:0.1f}'.format(cnt_type_non_reported * 100.0 / num_companies)
+
     prcnt_paid = '{0:0.1f}'.format(cnt_paid * 100.0 / num_companies)
     prcnt_share = '{0:0.1f}'.format(cnt_share * 100.0 / num_companies)
     prcnt_paid_share = '{0:0.1f}'.format(cnt_paid_share * 100.0 / num_companies)    
+    prcnt_non_reported = '{0:0.1f}'.format(cnt_non_reported * 100.0 / num_companies)    
 
     return {
         'EMPLOYER_THRESHOLD_MESSAGE': settings.EMPLOYER_THRESHOLD_MESSAGE,
@@ -342,6 +353,7 @@ def get_life_plan(employers, num_companies):
         'cnt_multiple_max': cnt_multiple_max,
         'mdn_flat_amount': mdn_flat_amount, 
         'cnt_flat_amount': cnt_flat_amount,
+        'mn_flat_amount': mn_flat_amount,
         'flat_array': mark_safe(json.dumps(flat_array)),
         'flat_array_': flat_array_,
         
@@ -350,18 +362,22 @@ def get_life_plan(employers, num_companies):
         'cnt_type_plan_mul': cnt_type_plan_mul,
         'cnt_type_plan_flat': cnt_type_plan_flat,
         'cnt_type_plan_mul_flat': cnt_type_plan_mul_flat,
+        'cnt_type_non_reported': cnt_type_non_reported,
         'cnt_paid': cnt_paid,
         'cnt_share': cnt_share,
         'cnt_paid_share': cnt_paid_share,
+        'cnt_non_reported': cnt_non_reported,
         
         'prcnt_add': prcnt_add,
         'prcnt_type_plan_none': prcnt_type_plan_none,
         'prcnt_type_plan_mul': prcnt_type_plan_mul,
         'prcnt_type_plan_flat': prcnt_type_plan_flat,
         'prcnt_type_plan_mul_flat': prcnt_type_plan_mul_flat,
+        'prcnt_type_non_reported': prcnt_type_non_reported,
         'prcnt_paid': prcnt_paid,
         'prcnt_share': prcnt_share,
         'prcnt_paid_share': prcnt_paid_share,
+        'prcnt_non_reported': prcnt_non_reported,
         
         'num_plan0': num_plan0,
         'num_plan1': num_plan1,
@@ -417,3 +433,8 @@ def get_flat_array(lifes):
         idx += 1
 
     return f_array
+
+
+def get_mean(queryset, term):
+    mean = queryset.aggregate(Avg(term))
+    return int(mean.values()[0])

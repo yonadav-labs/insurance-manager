@@ -8,8 +8,8 @@
 <div class="section">
     <div class="section-content">
         <table class="table table-striped">
-            <col width="45%">
-            <col width="40%">
+            <col width="50%">
+            <col width="35%">
             <col width="15%">
             <thead>
                 <tr>
@@ -42,8 +42,8 @@
             </tbody>
         </table>
         <table class="table table-striped">
-            <col width="45%">
-            <col width="40%">
+            <col width="50%">
+            <col width="35%">
             <col width="15%">
             <thead>
                 <tr>
@@ -53,11 +53,6 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Not Offered</td>
-                    <td>{{ prcnt_type_plan_none }}%</td>
-                    <td>{{ cnt_type_plan_none }}</td>
-                </tr>
                 <tr>
                     <td>Multiple of Salary Plan(s) Only</td>
                     <td>{{ prcnt_type_plan_mul }}%</td>
@@ -72,6 +67,16 @@
                     <td>Both Multiple of Salary & Flat Amount Plans</td>
                     <td>{{ prcnt_type_plan_mul_flat }}%</td>
                     <td>{{ cnt_type_plan_mul_flat }}</td>
+                </tr>
+                <tr>
+                    <td>Not Reported</td>
+                    <td>{{ prcnt_type_non_reported }}%</td>
+                    <td>{{ cnt_type_non_reported }}</td>
+                </tr>
+                <tr>
+                    <td>Not Offered</td>
+                    <td>{{ prcnt_type_plan_none }}%</td>
+                    <td>{{ cnt_type_plan_none }}</td>
                 </tr>
             </tbody>
         </table>  
@@ -89,8 +94,8 @@
 <div class="section">
     <div class="section-content">
         <table class="table table-striped">
-            <col width="45%">
-            <col width="40%">
+            <col width="50%">
+            <col width="35%">
             <col width="15%">
             <thead>
                 <th>Cost Share</th>
@@ -98,11 +103,6 @@
                 <th>Count</th>
             </thead>
             <tbody>
-                <tr>
-                    <td>Not Offered</td>
-                    <td>{{ prcnt_type_plan_none }}%</td>
-                    <td>{{ cnt_type_plan_none }}</td>
-                </tr>
                 <tr>
                     <td>100% Employer Paid Only</td>
                     <td>{{ prcnt_paid }}%</td>
@@ -114,9 +114,19 @@
                     <td>{{ cnt_share }}</td>
                 </tr>
                 <tr>
-                    <td>100% Employer Paid & Employee Cost Share</td>
+                    <td>Core & Buy Up Plans</td>
                     <td>{{ prcnt_paid_share }}%</td>
                     <td>{{ cnt_paid_share }}</td>
+                </tr>
+                <tr>
+                    <td>Not Reported</td>
+                    <td>{{ prcnt_non_reported }}%</td>
+                    <td>{{ cnt_non_reported }}</td>
+                </tr>
+                <tr>
+                    <td>Not Offered</td>
+                    <td>{{ prcnt_type_plan_none }}%</td>
+                    <td>{{ cnt_type_plan_none }}</td>
                 </tr>
             </tbody>
         </table>  
@@ -145,13 +155,13 @@
 <div class="section">
     <div class="section-content">
         <table class="table table-striped">
-            <col width="45%">
-            <col width="40%">
+            <col width="50%">
+            <col width="35%">
             <col width="15%">
             <thead>
                 <tr>
-                    <th>Flat Amount Values</th>
-                    <th>Percent of Plans</th>
+                    <th>Flat Amount Plans</th>
+                    <th>Values</th>
                     <th>Count</th>
                 </tr>
             </thead>
@@ -161,6 +171,35 @@
                     <td>${{ mdn_flat_amount|intcomma }}</td>
                     <td>{{ cnt_flat_amount }}</td>
                 </tr>
+                <tr>
+                    <td>Mean Flat Amount</td>
+                    <td>${{ mn_flat_amount|intcomma }}</td>
+                    <td>{{ cnt_flat_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Standard Deviation</td>
+                    <td></td>
+                    <td>{{ cnt_flat_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Includes ADD</td>
+                    <td>{{ prcnt_add }}</td>
+                    <td>{{ cnt_add }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-striped">
+            <col width="50%">
+            <col width="35%">
+            <col width="15%">
+            <thead>
+                <tr>
+                    <th>Flat Amount Distributions</th>
+                    <th>Percent of Plans</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <td>Flat Amount <$10k</td>
                     <td>{{ flat_array_.0.0 }}</td>
@@ -216,16 +255,11 @@
                     <td>{{ flat_array_.10.0 }}</td>
                     <td>{{ flat_array_.10.1 }}</td>
                 </tr>
-                <tr>
-                    <td>With ADD</td>
-                    <td>{{ prcnt_add }}</td>
-                    <td>{{ cnt_add }}</td>
-                </tr>
             </tbody>
         </table>
     </div>
     <div class="section-graph">
-        <p class="exhibit-text">Exhibit L5: Flat Amount Plans</p>
+        <p class="exhibit-text">Exhibit L5: Flat Amount Distributions</p>
         <div id="L-5" class="flot-chart"></div>
     </div>
 </div>
@@ -237,29 +271,39 @@
 <div class="section">
     <div class="section-content">
         <table class="table table-striped">
-            <col width="45%">
-            <col width="40%">
+            <col width="50%">
+            <col width="35%">
             <col width="15%">
             <thead>
                 <tr>
-                    <th>Plan Type</th>
-                    <th>Median Value</th>
+                    <th>Multiple of Salary Plans</th>
+                    <th>Values</th>
                     <th>Count</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Multiple of Salary</td>
-                    <td>{{ mdn_multiple }}</td>
-                    <td>{{ cnt_multiple }}</td>
-                </tr>
-                <tr>
-                    <td>Multiple Maximum</td>
+                    <td>Median Multiple Maximum</td>
                     <td>${{ mdn_multiple_max|intcomma }}</td>
                     <td>{{ cnt_multiple_max }}</td>
                 </tr>
                 <tr>
-                    <td>With ADD</td>
+                    <td>Mean Multiple Maximum</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Multiple Maximum Standard Deviation</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Multiple of Salary Factor</td>
+                    <td>{{ mdn_multiple }}</td>
+                    <td>{{ cnt_multiple }}</td>
+                </tr>
+                <tr>
+                    <td>Includes ADD</td>
                     <td>{{ prcnt_add }}</td>
                     <td>{{ cnt_add }}</td>
                 </tr>

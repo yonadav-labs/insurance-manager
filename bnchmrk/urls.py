@@ -31,11 +31,14 @@ urlpatterns += [
     url("^$", direct_to_template, {"template": "index.html"}, name="home"),
     url(r"^login", user_login, name="login"),
     url(r"^logout", user_logout, name="logout"),
-    url(r"^import_data", import_data, name="import_data"),
     url(r"^enterprise", enterprise, name="enterprise"),
     url(r"^_enterprise", ajax_enterprise, name="_enterprise"),
     url(r"^get_num_employers", get_num_employers, name="get_num_employers"),
     url("^", include("mezzanine.urls")),
+
+    url(r"^import_employer", import_employer, name="import_employer"),
+    url(r"^import_life", import_life, name="import_life"),
+    url(r"^import_std", import_std, name="import_std"),
 ]
 
 # Adds ``STATIC_URL`` to the context of error pages, so that error
