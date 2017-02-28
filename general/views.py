@@ -1,5 +1,6 @@
 import csv
 import json
+import collections
 
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
@@ -9,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, StdDev
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
@@ -54,8 +55,8 @@ def import_employer(request):
             try:
                 employer = Employer.objects.create(
                     id=row['ID'],
-                    name=row['NAME'].decode('utf8'),
-                    alias=row['EMPLOYER_ALIAS__C'].decode('utf8'),
+                    # name=row['NAME'].decode('utf8'),
+                    name = unicode(row['NAME'], errors='ignore'),
                     broker=row['BROKER__C'],
                     industry1=row['INDUSTRY_1__C'],
                     industry2=row['INDUSTRY_2__C'],
@@ -126,7 +127,7 @@ def import_std(request):
     return HttpResponse('Successfully imported!')
 
 
-def get_filtered_employers(ft_industries, ft_head_counts, ft_other, ft_regions, lstart=0, lend=0, order_by='name'):
+def get_filtered_employers(ft_industries, ft_head_counts, ft_other, ft_regions, lstart=0, lend=0, group='bnchmrk'):
     # filter with factors from UI (industry, head-count, other)
     q = Q()
     if not '*' in ft_industries:
@@ -146,10 +147,17 @@ def get_filtered_employers(ft_industries, ft_head_counts, ft_other, ft_regions, 
         ft_vals = ft_head_count.split('-')        
         q_ |= Q(size__gte=int(ft_vals[0])) & Q(size__lte=int(ft_vals[1]))
 
-    if lend:
-        employers = Employer.objects.filter(q & q_).order_by(order_by)[lstart:lend]
+
+    if group == "bnchmrk":
+        employers_ = Employer.objects.filter(q & q_).order_by('name')
     else:
-        employers = Employer.objects.filter(q & q_).order_by(order_by)
+        select = {'new_name':
+            'CASE WHEN broker=\'Core\' THEN name WHEN broker=\'{}\' THEN name ELSE \'De-identified Employer\' END'.format(group)}
+        employers_ = Employer.objects.filter(q & q_).extra(select=select).order_by('new_name')
+        
+    employers = employers_
+    if lend:
+        employers = employers_[lstart:lend]
 
     num_companies = Employer.objects.filter(q & q_).count()    
     # filter with number of companies
@@ -175,8 +183,7 @@ def enterprise(request):
         lstart = (page - 1) * limit
         lend = lstart + limit
 
-        is_core_user = request.user.groups.filter(name='Core').exists()
-        order_by = 'alias' if is_core_user else 'name'
+        group = request.user.groups.first().name
 
         employers, num_companies = get_filtered_employers(ft_industries, 
                                                           ft_head_counts, 
@@ -184,15 +191,15 @@ def enterprise(request):
                                                           ft_regions, 
                                                           lstart, 
                                                           lend,
-                                                          order_by)
+                                                          group)
 
         # convert head-count into groups
         employers_ = []
         for item in employers:
             item_ = model_to_dict(item)
 
-            if is_core_user:
-                item_['name'] = item.alias
+            if group != 'bnchmrk':
+                item_['name'] = item.new_name
 
             item__ = []
             if item.nonprofit:
@@ -251,7 +258,7 @@ def enterprise(request):
         industries3 = [item[0] for item in industries3 if item[0]]
         industries = set(industries1 + industries2 + industries3)
 
-        request.session['benefit'] = request.session.get('benefit', 'EMPLOYERS')
+        request.session['benefit'] = request.session.get('benefit', 'HOME')
 
         return render(request, 'enterprise.html', {
                 'industries': sorted(industries),
@@ -269,7 +276,10 @@ def ajax_enterprise(request):
     benefit = form_param.get('benefit')
     request.session['benefit'] = benefit
 
-    if benefit == 'LIFE':
+    if benefit == 'HOME':
+        full_name = '{} {}'.format(request.user.first_name, request.user.last_name)
+        return render(request, 'home.html', locals())
+    elif benefit == 'LIFE':
         employers, num_companies = get_filtered_employers(ft_industries, 
                                                           ft_head_counts, 
                                                           ft_other,
@@ -297,7 +307,8 @@ def get_life_plan(employers, num_companies):
     mdn_multiple_max, cnt_multiple_max = get_median_count(qs_multiple_max, 'multiple_max')
     qs_flat_amount = lifes.exclude(flat_amount__isnull=True)
     mdn_flat_amount, cnt_flat_amount = get_median_count(qs_flat_amount, 'flat_amount')    
-    mn_flat_amount = get_mean(qs_flat_amount, 'flat_amount')
+    mn_flat_amount, sdv_flat_amount = get_mean_sdv(qs_flat_amount, 'flat_amount')
+
     # for counting # of plans
     num_plan0 = employers.filter(life_count=0).count()
     num_plan1 = employers.filter(life_count=1).count()
@@ -312,6 +323,7 @@ def get_life_plan(employers, num_companies):
     flat_array = get_flat_array(qs_flat_amount) 
     flat_array_ = [['{0:0.1f}%'.format(item[1] * 100.0 / cnt_flat_amount), item[1]] for item in flat_array]
     flat_array = [[item[0], '{0:0.1f}'.format(item[1] * 100.0 / cnt_flat_amount)] for item in flat_array]
+    flat_array.insert(0, ['0', 0.0]) # for formatting   
 
     cnt_add = lifes.filter(add=True).count()
 
@@ -354,6 +366,7 @@ def get_life_plan(employers, num_companies):
         'mdn_flat_amount': mdn_flat_amount, 
         'cnt_flat_amount': cnt_flat_amount,
         'mn_flat_amount': mn_flat_amount,
+        'sdv_flat_amount': sdv_flat_amount,
         'flat_array': mark_safe(json.dumps(flat_array)),
         'flat_array_': flat_array_,
         
@@ -435,6 +448,7 @@ def get_flat_array(lifes):
     return f_array
 
 
-def get_mean(queryset, term):
+def get_mean_sdv(queryset, term):
     mean = queryset.aggregate(Avg(term))
-    return int(mean.values()[0])
+    sdv = queryset.aggregate(StdDev(term))
+    return int(mean.values()[0]), int(sdv.values()[0])

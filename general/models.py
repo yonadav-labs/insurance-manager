@@ -2,12 +2,10 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-# Create your models here.
 
 class Employer(models.Model):
     id = models.CharField(max_length=18, primary_key=True)
     name = models.CharField(max_length=100)
-    alias = models.CharField(max_length=100, null=True, blank=True) 
     broker = models.CharField(max_length=75, null=True, blank=True) 
     industry1 = models.CharField(max_length=75, null=True, blank=True)
     industry2 = models.CharField(max_length=75, null=True, blank=True) 

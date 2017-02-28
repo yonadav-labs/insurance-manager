@@ -93,7 +93,8 @@ USE_MODELTRANSLATION = False
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
-    "localhost"
+    "localhost",
+    "127.0.0.1"
 ]
 
 # Local time zone for this installation. Choices can be found here:
@@ -126,6 +127,8 @@ DEBUG = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 SITE_ID = 1
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
