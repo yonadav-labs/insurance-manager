@@ -44,26 +44,29 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         {% if user.is_authenticated %}
+                        <li class="menu-login">
+                            <a href="/logout">LOGOUT</a>
+                        </li>
+                        <li class="enterprise">
+                            <a href="/enterprise">ENTERPRISE</a> 
+                        </li>
+                        {% else %}
                         <li>
-                            <a href="/enterprise" class="enterprise-link"><span style="color:#ee7123; font-weight: bold;">ENTERPRISE</span></a> 
+                            <a href="/">PRODUCTS</a>
+                        </li>
+                        <li>
+                            <a href="/blog">INSIGHTS</a>
+                        </li>
+                        <li>
+                            <a href="/">ABOUT US</a>
+                        </li>
+                        <li>
+                            <a href="/">CONTACT</a>
+                        </li>
+                        <li class="menu-login">
+                            <a href="/login">LOGIN</a>
                         </li>
                         {% endif %}
-                        <li>
-                            <a href="/blog">Insights & News</a>
-                        </li>
-                        <li>
-                            <a href="/">We're Hiring</a>
-                        </li>
-                        <li>
-                            <a href="/">Contact</a>
-                        </li>
-                        <li>
-                            {% if user.is_authenticated %}
-                            <a href="/logout">Logout</a>
-                            {% else %}
-                            <a href="/login">Login</a>
-                            {% endif %}
-                        </li>
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
@@ -81,9 +84,6 @@
                 </div>
             </div>
         </header>
-
-        <hr>
-
         <div class="container">
             <!-- Features Title -->
             <div class="row">
